@@ -22,4 +22,16 @@ Route.get('/', () => {
 
 Route.post('sessions','SessionController.store')
 
+Route.group(()=>{
+  Route.resource('teams','TeamController').apiOnly()
+}).middleware(['auth'])
+
+
+
+Route.group(()=>{
+ Route.post('invites','InviteController.store')
+}).middleware(['auth','team'])
+
+
+
 Route.resource('users','UserController').apiOnly()
