@@ -1,5 +1,6 @@
 'use strict'
 
+const Team = use('App/Models/Team')
 
 class TeamController {
 
@@ -10,10 +11,19 @@ class TeamController {
 
   }
 
-  async store ({ request, auth }) {
+  async store ({ request, auth,response }) {
+
    const data = request.only(['name'])
 
-   const team = await auth.user.teams().create({
+   let team = await Team.findBy('name',data.name)
+
+   if(team){
+      return response
+      .status(400)
+      .send({ message: "Team already create" });
+   }
+
+   team = await auth.user.teams().create({
      ...data,
      user_id:auth.user.id
    })
@@ -35,10 +45,16 @@ class TeamController {
   }
 
 
-  async update ({ params, request, auth}) {
+  async update ({ params, request,auth ,response}) {
     const data = request.only(['name'])
 
     const team = await auth.user.teams().where('teams.id',params.id).first()
+
+    if(!team){
+      return response
+      .status(404)
+      .send({ message: "Not found team of id"});
+    }
 
 
     team.merge(data)
