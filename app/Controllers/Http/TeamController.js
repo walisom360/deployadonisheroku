@@ -21,8 +21,14 @@ class TeamController {
    return team
   }
 
-  async show ({ params, auth}) {
+  async show ({ params, auth ,response}) {
     const team = await auth.user.teams().where('teams.id',params.id).first()
+
+    if(!team){
+      return response
+      .status(404)
+      .send({ message: "Not found team" });
+    }
 
 
     return team
